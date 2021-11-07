@@ -18,7 +18,7 @@ let folderExist = fs.access(copyDirPath, fs.constants.F_OK, (err) => {
 
 function createDir() {
   fs.mkdir(copyDirPath, { recursive: true }, () => {});
-  copyFiles();
+  copyFiles(dirPath, copyDirPath);
 }
 
 function removeDir(callback) {
@@ -28,12 +28,28 @@ function removeDir(callback) {
   });
 }
 
-function copyFiles() {
-  fs.readdir(dirPath, options, (err, files) => {
-    files.forEach((item) => {
-      const filePath = path.join(dirPath, item.name);
-      const copyFilePath = path.join(copyDirPath, item.name);
-      fs.copyFile(filePath, copyFilePath, (err) => {});
+// function copyFiles() {
+//   fs.readdir(dirPath, options, (err, files) => {
+//     files.forEach((item) => {
+//       const filePath = path.join(dirPath, item.name);
+//       const copyFilePath = path.join(copyDirPath, item.name);
+//       fs.copyFile(filePath, copyFilePath, (err) => {});
+//     });
+//   });
+// }
+
+function copyFiles(from, to) {
+  fs.mkdir(to, { recursive: true }, () => {
+    fs.readdir(from, options, (err, files) => {
+      files.forEach((item) => {
+        if (item.isFile()) {
+          const filePath = path.join(from, item.name);
+          const copyFilePath = path.join(to, item.name);
+          fs.copyFile(filePath, copyFilePath, (err) => {});
+        } else {
+          copyFiles(path.join(from, item.name), path.join(to, item.name));
+        }
+      });
     });
   });
 }

@@ -9,7 +9,7 @@ console.log(copyDirPath);
 
 let folderExist = fs.access(copyDirPath, fs.constants.F_OK, (err) => {
   if (err) {
-    createDir();
+    copyFiles(dirPath, copyDirPath);
     copyFiles();
   } else {
     removeDir(createDir);
